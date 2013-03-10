@@ -104,99 +104,50 @@ function Population(size, fitness, mutationRate, crossoverRate)
     };
 }
 
-function run()
-{
-    try {
-        var fitness = new (eval(document.forms[0].fitness.value));
-    } catch (e) {
-        alert("Fitness function does not evaluate: " + e);
-        return;
-    }
-
-    var generations = document.forms[0].generations.value;
-    var populationSize = document.forms[0].populationSize.value;
-    var mutationRate = parseFloat(document.forms[0].mutationRate.value);
-    var crossoverRate = parseFloat(document.forms[0].crossoverRate.value);
+/**
+ * @param {gaTask} task
+ * @param {object} params
+ * @param {int} params.populationSize
+ * @param {int} params.crossoverRate
+ * @param {int} params.mutationRate
+ */
+function GARun(task, params) {
+    this.task = task;
+    this.params = params;
+    this.population = this._preparePopulation();
+    this.active = false;
     
-    // Check args
-    if (crossoverRate > 1 || mutationRate > 1 || crossoverRate + mutationRate > 1 ) {
-        alert("cross over and mutation rate combined need to be smaller then 1.0");
-        return;
-    }
-    if (populationSize * crossoverRate + mutationRate < 1) {
-        alert("populationSize * crossoverRate + mutationRate needs to be smaller then 1.0");
-        return;
-    }
-
-    var population = new Population(populationSize, fitness, mutationRate, crossoverRate);
-
-    var log = [];
-    var logStr = [];
-    try {
-        for (var i = 0; i < generations; ++i)
-        {
-                population.buildNextGeneration();
-                if (log[log.length - 1] != population.people[0].fitnessValue) {
-                    log[log.length] = population.people[0].fitnessValue;
-                    logStr[logStr.length] = "Generation " + i +": " + population.people[0].fitnessValue;
-                }
-        }
-    } catch (e) {
-        alert("When executing function:" + e.message);
-        return;
-    }
-
-    var best = population.people[0];
-    document.forms[0].best.value = "";
-    for (var i = 0; i < fitness.numberOfArgs(); ++i) {
-        document.forms[0].best.value += best.value(i, fitness) + "; ";
-    }
-    document.forms[0].maxFitness.value = best.fitnessValue;
-
-    var canvas = document.getElementById('graph');
-    if (canvas.getContext){
-        var w = canvas.width;
-        var h = canvas.height;
-        var canvasContext = canvas.getContext('2d');
-        canvasContext.clearRect(0, 0, w, h);
+    /**
+     * @type Population
+     */
+    this._preparePopulation = function(){
+        // Check args
+        if(!(this.params.populationSize && this.params.crossoverRate && this.params.mutationRate ))
+            throw("GA parameters are incomplete");
+        if (this.params.crossoverRate > 1 || this.params.mutationRate > 1 || this.params.crossoverRate + this.params.mutationRate > 1 )
+            throw("cross over and mutation rate combined need to be smaller then 1.0");
+        if (this.params.populationSize * this.params.crossoverRate + this.params.mutationRate < 1)
+            throw("populationSize * crossoverRate + mutationRate needs to be smaller then 1.0");
         
-        // draw horizontal lines
-        for (var i = 0; i < h; ++i){
-            canvasContext.fillRect(0, 10 + i * 10, 1, w);
-        }
-        
-        // Create background gradient
-        var linearGradient = canvasContext.createLinearGradient(0, 0, 0, w);
-        linearGradient.addColorStop(0, '#00ABEB');
-        linearGradient.addColorStop(0.75, '#fff');
-        linearGradient.addColorStop(1, '#fff');
-        canvasContext.fillStyle = linearGradient;
-        canvasContext.fillRect(0,0,w,h);
-
-        canvasContext.fillStyle = '#fef';
-        for (var i = 0; i < h; i += 10) {
-            canvasContext.fillRect(2, 10 + i, w - 2, 1);
-        }
-        
-        linearGradient = canvasContext.createLinearGradient(0, 0, 0, w);
-        linearGradient.addColorStop(1, '#00ABEB');
-        linearGradient.addColorStop(0.75, '#000');
-        linearGradient.addColorStop(0, '#000');
-        canvasContext.fillStyle = linearGradient;
-        canvasContext.strokeRect(1, 1, w - 2, h - 2);
-        for (var i = 0; i < log.length; ++i) {
-            canvasContext.fillRect(5 + i * 5, h - log[i] - 2, 3, log[i]);
-        }
-    }
-    var graphData = document.getElementById('graphdata'); 
-    graphData.innerHTML = logStr.join("<br>");
+        return new Population(this.params.populationSize, this.task.fitness, this.params.mutationRate, this.params.crossoverRate);
+    };
     
-    var args = []
-    for (var i = 0; i < best.numberOfValues; ++i) {
-        args[i] = best.value(i, fitness);
-    }
-    fitness.paint(args);
+    this.run = function(){
+        this.active = true;
+        while(active)
+            this.population.buildNextGeneration();
+    };
     
-    delete fitness;
-    delete population;
+    this.stop = function(){
+        this.active = false;
+    }
+    
+    this.best = function(){
+        return population.people[0];
+    }
+    
+    this.addIndividual = function(individual){
+        population.people[population.people.length -1] = individual;
+    }
 }
+
