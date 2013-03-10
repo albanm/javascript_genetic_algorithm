@@ -114,27 +114,20 @@ function Population(size, fitness, mutationRate, crossoverRate)
 function GARun(task, params) {
     this.task = task;
     this.params = params;
-    this.population = this._preparePopulation();
     this.active = false;
+
+    if(!(this.params.populationSize && this.params.crossoverRate && this.params.mutationRate ))
+        throw("GA parameters are incomplete");
+    if (this.params.crossoverRate > 1 || this.params.mutationRate > 1 || this.params.crossoverRate + this.params.mutationRate > 1 )
+        throw("cross over and mutation rate combined need to be smaller then 1.0");
+    if (this.params.populationSize * this.params.crossoverRate + this.params.mutationRate < 1)
+        throw("populationSize * crossoverRate + mutationRate needs to be smaller then 1.0");
     
-    /**
-     * @type Population
-     */
-    this._preparePopulation = function(){
-        // Check args
-        if(!(this.params.populationSize && this.params.crossoverRate && this.params.mutationRate ))
-            throw("GA parameters are incomplete");
-        if (this.params.crossoverRate > 1 || this.params.mutationRate > 1 || this.params.crossoverRate + this.params.mutationRate > 1 )
-            throw("cross over and mutation rate combined need to be smaller then 1.0");
-        if (this.params.populationSize * this.params.crossoverRate + this.params.mutationRate < 1)
-            throw("populationSize * crossoverRate + mutationRate needs to be smaller then 1.0");
+    this.population = new Population(this.params.populationSize, this.task, this.params.mutationRate, this.params.crossoverRate);
         
-        return new Population(this.params.populationSize, this.task.fitness, this.params.mutationRate, this.params.crossoverRate);
-    };
-    
     this.run = function(){
         this.active = true;
-        while(active)
+        while(this.active)
             this.population.buildNextGeneration();
     };
     
@@ -146,8 +139,8 @@ function GARun(task, params) {
         return population.people[0];
     }
     
-    this.addIndividual = function(individual){
-        population.people[population.people.length -1] = individual;
+    this.addChromosome = function(chromosome){
+        population.people[population.people.length -1] = chromosome;
     }
 }
 

@@ -1,31 +1,36 @@
 /**
  * A web worker that uses javascriptgeneticalgorithm.js to run a given task
  */
+
+var _gaRun = null;
+ 
 self.onmessage = function(e) {
   var data = e.data;
   switch (data.cmd) {
     case 'runtask':
-        _run_ga_task(data.task);
+        if(data.task)
+            _run_ga_task(data.task);
+        self.postMessage('Run task : ' + data.task && data.task.description);
         break;
     case 'stop':
-        _if(_gaRun)
+        if(_gaRun)
             _gaRun.stop();
         self.close();
+        self.postMessage('Stop task');
         break;
-    case 'setIndividual':
-        if(_gaRun && individual)
-            _gaRun.addIndividual();
+    case 'setChromosome':
+        if(_gaRun && data.chromosome)
+            _gaRun.addChromosome(data.chromosome);
+        self.postMessage('Received chromosome : ' + data.chromosome);
         break;
     case 'getBest':
         if(_gaRun)
-            self.postMessage('best', _gaRun.best());
+            self.postMessage({'cmd' : 'best', 'chromosome' : _gaRun.best()});
         break;
     default:
       self.postMessage('Unknown command: ' + data.cmd);
   };
 };
-
-var _gaRun = null;
 
 function _run_ga_task(task){
     importScripts("javascriptgeneticalgorithm.js");

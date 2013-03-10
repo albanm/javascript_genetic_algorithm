@@ -1,44 +1,26 @@
 <html>
 <head>
 <title>Javscript Genetic Algorithm</title>
-<script src="ga_client.js" type="text/javascript"></script>
+<script src="../js/ga_client.js" type="text/javascript"></script>
 <script type="text/javascript">
     window.onload = function(){
-        var connect = new gaConnection({
-            url : "http://localhost:1337",
-            logelement : document.getElementById("log_div")
+        var connect = new GAConnection({
+            serverURL : "localhost:1337",
+            workerURL : "http://localhost:8080/js/ga_worker.js",
+            logelement : document.getElementById("log_div"),
+            loglevel : 2
         });
     }
 </script>
 </head>
 <body>
 
-<h1>Javascript genetic algorithm client</h1>
+<h1>GeneSwarm client example</h1>
+
+<p>This client connects to a node.js server and receives tasks to run in a local population of genetic algorithm.
+The population is created in a Web worker.
+All communications are logged below.</p>
 
 <div id="log_div"></div>
-
-<p>
-The included example tries to find the shortest path between a set of points (the travelling salesman problem).
-<p>
-<form>
-<br>
-Number of generations:
-<input type="text" name="generations" size="6", value="100"> <a href="http://en.wikipedia.org/wiki/Genetic_algorithm#Reproduction">[?]</a>
-
-<br>Number of chromosomes in the population:
-<input type="text" name="populationSize" size="6", value="500"> <a href="http://en.wikipedia.org/wiki/Chromosome_%28genetic_algorithm%29">[?]</a>
-
-<br>Mutation rate:
-<input type="text" name="mutationRate" size="4", value="0.05">% <a href="http://en.wikipedia.org/wiki/Mutation_%28genetic_algorithm%29">[?]</a>
-
-<br>Crossover rate:
-<input type="text" name="crossoverRate" size="4", value="0.75">% <a href="http://en.wikipedia.org/wiki/Crossover_%28genetic_algorithm%29">[?]</a>
-<br>
-<input type="button" value="Run" onClick="run();">
-
-<h3>Results</h3>
-Chromosome: <input type="text" name="best">
-Fitness: <input type="text" name="maxFitness">
-</form>
 
 </ul>

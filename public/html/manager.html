@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>Javscript Genetic Algorithm</title>
+<script src="../js/ga_client.js" type="text/javascript"></script>
+<script src="../js/ga_manager.js" type="text/javascript"></script>
+<script type="text/javascript">
+    window.onload = function(){
+        var connect = new GAManager({
+            serverURL : "localhost:1338",
+            workerURL : "http://localhost:8080/js/ga_worker.js",
+            logelement : document.getElementById("log_div"),
+            loglevel : 2
+        });
+        document.getElementById("test_salesman").addEventListener("click", function(){
+            connect.worker.postMessage({cmd : "runtask", task : {
+                description : "A simple example of a salesman problem task",
+                scriptURL : "salesman_task.js",
+                data : [ [0,0], [10,10], [6,6], [5,6], [3,3], [7,2] ],
+                params : {
+                    populationSize : 500,
+                    crossoverRate : 0.75,
+                    mutationRate : 0.05
+                }
+            }});
+            window.setInterval(function(){
+                connect.worker.postMessage({cmd : "getBest"});
+            }, 3000);
+        }, false);
+    }
+</script>
+</head>
+<body>
+
+<h1>GeneSwarm manager</h1>
+
+<p>This manager connects to a node.js server to send genetic algorithms tasks and receive results processed by clients.
+It is also capable of running a population locally to test tasks before broadcasting it to the server and its clients.
+</p>
+
+<button id='test_salesman'>Test</button>
+<button id='stop_salesman'>Stop</button>
+
+
+<div id="log_div"></div>
+
+</ul>

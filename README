@@ -1,1 +1,20 @@
-This is just a pet project for experimenting with Web Workers, node.js, socket.io and nice stuff like that. Oh, and in the process I may end up ruling the world !
+Warning : only a draft, don't look for anything functional yet.
+
+A node.js server and its client for running genetic algorithms across browsers. This is a pet project for experimenting with Web Workers, node.js, socket.io and nice stuff like that.
+
+Installing dependancies on my system (ubuntu):
+
+$> sudo apt-get install nodejs npm
+$> sudo npm install http-server -g
+$> cd $sandbox$/javascript_genetic_algorithm/
+$> sudo npm install socket.io
+
+Running a basic HTTP server to serve static resources (it will look for the 'public' directory):
+
+$> http-server
+
+Running the server for WebSockets communication:
+
+$> nodejs ga_server.js
+
+Open http://localhost:8080/html/manager.html and http://localhost:8080/html/client_example.html
