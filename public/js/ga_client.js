@@ -63,7 +63,7 @@ GAConnection.prototype._connect = function(){
     this._logmsg('WebSocket connection to ' + this.options.serverURL, 1);
     var socket = new WebSocket('ws://' + this.options.serverURL);
     socket.onerror = function (error) {
-        that._logmsg('WebSocket error ' + error, 0);
+        that._logmsg('WebSocket error ' + error.toString(), 0);
         that.close();
     };
     return socket;
@@ -87,13 +87,14 @@ GAConnection.prototype._createWorker = function(){
  * Organizes communications between the websocket and the worker to transmit tasks, chromosomes, etc.
  */
 GAConnection.prototype._communicate = function(){
+    var that = this;
     this.socket.onmessage = function(e){
-        this._logmsg('Server sent: ' + e.data, 2);
-        this.worker.postMessage(e.data);
+        that._logmsg('Server sent: ' + e.data, 2);
+        that.worker.postMessage(e.data);
     }
     this.worker.onmessage = function(e){
-        this._logmsg('Worker sent: ' + e.data, 2);
-        this.socket.send(e.data);
+        that._logmsg('Worker sent: ' + e.data, 2);
+        that.socket.send(e.data);
     }
 };
     

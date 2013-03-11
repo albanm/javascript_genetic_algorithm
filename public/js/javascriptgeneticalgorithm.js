@@ -104,43 +104,4 @@ function Population(size, fitness, mutationRate, crossoverRate)
     };
 }
 
-/**
- * @param {gaTask} task
- * @param {object} params
- * @param {int} params.populationSize
- * @param {int} params.crossoverRate
- * @param {int} params.mutationRate
- */
-function GARun(task, params) {
-    this.task = task;
-    this.params = params;
-    this.active = false;
-
-    if(!(this.params.populationSize && this.params.crossoverRate && this.params.mutationRate ))
-        throw("GA parameters are incomplete");
-    if (this.params.crossoverRate > 1 || this.params.mutationRate > 1 || this.params.crossoverRate + this.params.mutationRate > 1 )
-        throw("cross over and mutation rate combined need to be smaller then 1.0");
-    if (this.params.populationSize * this.params.crossoverRate + this.params.mutationRate < 1)
-        throw("populationSize * crossoverRate + mutationRate needs to be smaller then 1.0");
-    
-    this.population = new Population(this.params.populationSize, this.task, this.params.mutationRate, this.params.crossoverRate);
-        
-    this.run = function(){
-        this.active = true;
-        while(this.active)
-            this.population.buildNextGeneration();
-    };
-    
-    this.stop = function(){
-        this.active = false;
-    }
-    
-    this.best = function(){
-        return population.people[0];
-    }
-    
-    this.addChromosome = function(chromosome){
-        population.people[population.people.length -1] = chromosome;
-    }
-}
 

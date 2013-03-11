@@ -11,11 +11,12 @@ function GAManager(options){
     // A manager is a connection as defined in ga_client.js but that overrides communications
     this.__proto__ = GAConnection.prototype;
     this._communicate = function(){
+        var that = this;
         this.socket.onmessage = function(e){
-            this._logmsg('Server sent: ' + e.data, 2);
+            that._logmsg('Server sent: ' + (typeof e.data === 'object' ? JSON.stringify(e.data) : e.data), 2);
         }
         this.worker.onmessage = function(e){
-            this._logmsg('Worker sent: ' + e.data, 2);
+            that._logmsg('Worker sent: ' + (typeof e.data === 'object' ? JSON.stringify(e.data) : e.data), 2);
         }
     }
     this._create();

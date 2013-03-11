@@ -127,7 +127,7 @@ function GARun(task, params) {
         
     this.run = function(){
         this.active = true;
-        while(active)
+        while(this.active)
             this.population.buildNextGeneration();
     };
     
