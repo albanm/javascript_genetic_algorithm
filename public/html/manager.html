@@ -11,21 +11,32 @@
             logelement : document.getElementById("log_div"),
             loglevel : 2
         });
+        
+        var active = false;
+        window.setInterval(function(){
+            if(active)
+                connect.worker.postMessage({cmd : "getBest"});
+        }, 3000);
+        
         document.getElementById("test_salesman").addEventListener("click", function(){
+            active = true;
             connect.worker.postMessage({cmd : "runtask", task : {
                 description : "A simple example of a salesman problem task",
                 scriptURL : "salesman_task.js",
-                data : [ [0,0], [10,10], [6,6], [5,6], [3,3], [7,2] ],
+                data : [ [0,0], [10,10], [6,6], [5,6], [2,2], [5,5], [7,3], [7,2], [15,2], [20,20], [5,12], [3,18] ],
                 params : {
                     populationSize : 500,
                     crossoverRate : 0.75,
-                    mutationRate : 0.05
+                    mutationRate : 0.1
                 }
             }});
-            window.setInterval(function(){
-                connect.worker.postMessage({cmd : "getBest"});
-            }, 3000);
+            
         }, false);
+        
+        document.getElementById("stop_salesman").addEventListener("click", function(){
+            active = false;
+            connect.close();
+        });
     }
 </script>
 </head>

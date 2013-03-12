@@ -25,6 +25,7 @@ GAConnection.prototype.close = function(){
         this.socket.close();
     if(this.worker){
         this.worker.postMessage({cmd : 'stop'});
+        this.worker.terminate();
     }
 };
    

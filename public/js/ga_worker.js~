@@ -64,25 +64,25 @@ function GARun(task, params) {
     this.population = new Population(this.params.populationSize, this.task, this.params.mutationRate, this.params.crossoverRate);
         
     // create a while loop of generations in a non blocking way for letting other events pass
-    this.run = function(){
-        this.active = true;
-        setTimeout(this._nonBlockingGenerationsLoop, 0);
-    };
-    
     this._nonBlockingGenerationsLoop = function(){
-        var that = this;
         if(this.active){
-            that.population.buildNextGeneration();
-            setTimeout(that._nonBlockingGenerationsLoop, 0);
+            this.population.buildNextGeneration();
+            setTimeout(function(){this._nonBlockingGenerationsLoop()}, 0);
         }     
     }
+    this.run = function(){
+        this.active = true;
+        setTimeout(function(){this._nonBlockingGenerationsLoop()}, 0);
+    };
+    
     
     this.stop = function(){
         this.active = false;
     }
     
     this.best = function(){
-        return this.population.people[0];
+        var bestChromosome = this.population.people[0];
+        return {args : bestChromosome.args, fitnessValue : bestChromosome.fitnessValue};
     }
     
     this.addChromosome = function(chromosome){
