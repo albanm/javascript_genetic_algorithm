@@ -7,7 +7,7 @@ var _gaRun = null;
  
 self.onmessage = function(e) {
   var data = e.data;
-  self.postMessage('Command : ' + data && data.cmd);
+  self.postMessage('Command : ' + (data && data.cmd));
   switch (data.cmd) {
     case 'runtask':
         if(data.task){
@@ -65,14 +65,16 @@ function GARun(task, params) {
         
     // create a while loop of generations in a non blocking way for letting other events pass
     this._nonBlockingGenerationsLoop = function(){
+        var that = this;
         if(this.active){
             this.population.buildNextGeneration();
-            setTimeout(function(){this._nonBlockingGenerationsLoop()}, 0);
+            setTimeout(function(){that._nonBlockingGenerationsLoop()}, 0);
         }     
     }
     this.run = function(){
+        var that = this;
         this.active = true;
-        setTimeout(function(){this._nonBlockingGenerationsLoop()}, 0);
+        setTimeout(function(){that._nonBlockingGenerationsLoop()}, 0);
     };
     
     
@@ -85,8 +87,8 @@ function GARun(task, params) {
         return {args : bestChromosome.args, fitnessValue : bestChromosome.fitnessValue};
     }
     
-    this.addChromosome = function(chromosome){
-        this.population.people[population.people.length -1] = chromosome;
+    this.addChromosome = function(args){
+        this.population.people[population.people.length -1].args = args;
     }
 }
 
